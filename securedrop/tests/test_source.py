@@ -33,6 +33,19 @@ def test_page_not_found(source_app):
             ins.assert_template_used('notfound.html')
 
 
+def test_orgname_default_set(source_app):
+
+    class dummy_current():
+        organization_name = None
+
+    with patch.object(InstanceConfig, 'get_current') as iMock:
+        with source_app.test_client() as app:
+            iMock.return_value = dummy_current()
+            resp = app.get(url_for('main.index'))
+            assert resp.status_code == 200
+            assert g.organization_name == "SecureDrop"
+
+
 def test_index(source_app):
     """Test that the landing page loads and looks how we expect"""
     with source_app.test_client() as app:
